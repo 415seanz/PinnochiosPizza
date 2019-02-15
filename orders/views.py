@@ -74,16 +74,15 @@ def category_view(request,category="subs"):
         toppings = json_serializer.serialize(orders_models.Topping.objects.all())
         return render(request, "orders/category.html", {"message": "Category Page", "category": category, "items": items, "itemNames": itemNames, "sizes": sizes, "additions": additions, "toppings": toppings})
     else:
-        print(request.POST)
         item = orders_models.Item.objects.get(pk=request.POST["itemIdInput"])
         maxAdditions = orders_models.Addition.objects.filter(item__pk=item.pk).count()
         maxToppings = item.maxToppings
-        orderItem = orders_models.OrderItem(item=item, orderItemPrice=request.POST["itemPrice"])
-        orderItem.save(commit=False)
+        orderItem = orders_models.OrderItem(item=item, orderItemPrice=request.POST["itemPrice"], user=request.user)
+        orderItem.save()
 
         #add each addition to the orderItem
         for i in range(maxAdditions):
-            name = "check_" + i
+            name = "check_" + str(i)
             try:
                 addition = orders_models.Addition.objects.get(pk=request.POST[name])
                 orderItem.additions.add(addition)
@@ -93,11 +92,11 @@ def category_view(request,category="subs"):
         #add each topping to the orderItem
         if maxToppings != None:
             for j in range(maxToppings):
-                topnum = "topping" + j
+                topnum = "topping_" + str(j)
                 topping = orders_models.Topping.objects.get(pk=request.POST[topnum])
                 orderItem.toppings.add(topping)
 
-        orderItem.save()
-        orderItem.save_m2m()
+        #orderItem.save()
+        #orderItem.save_m2m()
 
         return HttpResponseRedirect(reverse("index"))

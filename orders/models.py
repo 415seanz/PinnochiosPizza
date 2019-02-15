@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 # Create your models here.
 
@@ -45,12 +46,14 @@ class OrderItem(models.Model):
     additions = models.ManyToManyField(Addition, blank=True, related_name="orderitems")
     toppings = models.ManyToManyField(Topping, blank=True, related_name="orderitems")
     orderItemPrice = models.DecimalField(max_digits=4, decimal_places=2)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return f"{self.item}: ({self.orderItemPrice})"
 
 class Order(models.Model):
     products = models.ManyToManyField(OrderItem, blank=True, related_name="orders")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return f"{self.category}: ({self.name})"
