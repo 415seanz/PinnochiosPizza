@@ -1,0 +1,31 @@
+{% extends "orders/base.html" %}
+
+{% block scripts %}{% endblock %}
+
+{% block body %}
+
+{% if message %}
+    <h3 align="center"> {{ message }} </h3>
+{% endif %}
+
+<div class="container">
+  <form action="{% url 'login' %}" method="post">
+      {% csrf_token %}
+      <div class="form-group row justify-content-center">
+        <div class="col-auto">
+          <input name="username" placeholder="username" type="text" autofocus/>
+        </div>
+        <div class="col-auto">
+          <input name="password" placeholder="password" type="password"/>
+      </div>
+    </div>
+    <div class="form-group row justify-content-center">
+      <input class="btn btn-success" type="submit" value="Login"/>
+    </div>
+  </form>
+</div>
+
+<div align="center">
+  <a href="{% url 'register' %}">New user? Register here.</a>
+</div>
+{% endblock %}

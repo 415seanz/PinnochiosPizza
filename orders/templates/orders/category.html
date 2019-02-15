@@ -1,0 +1,72 @@
+{% extends "orders/base.html" %}
+
+{% block scripts %}
+  {% load static from staticfiles %}
+<script type="text/javascript">
+  var items = {{ items|safe }};
+  var sizes = {{ sizes|safe }}
+  var additions = {{ additions|safe }}
+  var toppings = {{ toppings|safe }}
+</script>
+<script src="{% static 'orders/category.js' %}"></script>
+
+{% endblock %}
+
+{% block body %}
+<h1>Select an Item</h1>
+
+<div class="container-fluid">
+  {% for itemName in itemNames %}
+    <div id="Item{{ itemName.name }}" class="row justify-content-center my-3">
+        <div class="col-sm-4 mx-1 border border-success rounded menuItem">
+          {{ itemName.name }}
+        </div>
+        <button class="col-sm-2 mx-1 btn btn-danger order-now" data-itemName="{{ itemName.name }}">
+          Order Now!
+        </button>
+    </div>
+  {% endfor %}
+</div>
+
+<div id="coverLayer" class="coverLayer"></div>
+
+<div id=orderDiv class="container border border-info">
+  <h1 id="orderHeader"></h1>
+  <form class="form" action="{% url 'category' category %}" method="post">
+    {% csrf_token %}
+
+    <input type="hidden" id="itemIdInput" name="itemIdInput"/>
+
+    <div class="row my-1 justify-content-center">
+      <div class="col-3 mr-1 d-flex justify-content-end">
+        Size:
+      </div>
+      <div class="col-3 ml-1 d-flex justify-content-start">
+          <select id="sizeDropdown" name="sizeDropdown">
+          </select>
+      </div>
+    </div>
+
+    <div id="extrasSection" class="container col-3" style="display: none;"></div>
+
+    <div id="toppingSection" class="container col-6 justify-content-center" style="display: none;"></div>
+
+    <div class="row my-2 justify-content-center">
+      <div class="col-3 mr-1 d-flex justify-content-end">
+        Price:
+      </div>
+      <div class="col-3 ml-1 d-flex justify-content-start">
+          <div id="price"></div>
+      </div>
+    </div>
+
+    <input type="hidden" id="itemPrice" name="itemPrice"/>
+
+    <div class="row my-1 justify-content-center">
+      <div id="cancelButton" class="btn btn-danger mx-2">Cancel</div>
+      <button id="addToCart" type="submit" class="btn btn-success mx-2">Add To Cart</button>
+    </div>
+</div>
+
+
+{% endblock %}

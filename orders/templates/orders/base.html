@@ -1,0 +1,58 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+        <link rel="stylesheet" href="{% static 'orders/styles.css' %}"/>
+        <link rel="icon" type="image/x-icon" href="{% static 'orders/favicon.ico' %}"/>
+
+        <!-- documentation at http://getbootstrap.com/docs/4.0/, alternative themes at https://bootswatch.com/4-alpha/ -->
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet"/>
+
+
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
+
+        {% block scripts %}{% endblock %}
+
+        <title>{% block title %}{% endblock %}</title>
+
+    </head>
+    <body>
+      <div id="header" style="padding-bottom:10px;">
+        <table width="100%" cellspacing="0" cellpadding="0">
+          <tbody>
+            <tr>
+              <td class="green" width="20%">&nbsp;</td>
+              <td width="60%">
+                <img height="140" src="http://www.pinocchiospizza.net/images/pinocchio_72.gif" alt="Pinocchio"/>
+                <h1>Pinocchio's Pizza &amp; Subs</h1>
+                <h2>74 Winthrop Street<br />
+                Harvard Square<br />
+                617-876-4897</h2>
+              </td>
+              <td class="red" width="20%">&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="container-fluid">
+        <div class="row mx-0">
+          <div class="col d-flex justify-content-start">
+            <a href="{% url 'index' %}">Home</a>
+          </div>
+          <div class="col d-flex justify-content-end">
+            <a href="{% url 'logout' %}">Logout</a>
+          </div>
+        </div>
+      </div>
+
+      {% block body %}
+      {% endblock %}
+    </body>
+</html>
