@@ -1,3 +1,1 @@
-# Project 3
-
-Web Programming with Python and JavaScript
+This program represents a website for Pinnochio's Pizza. I utilized Django to create a method for users to browse the menu and order items with different sizes, toppings, and extras. Pinnochio's admin can add new items and change prices through the Django admin interface. I utilized url slugs for search engine optimization.
