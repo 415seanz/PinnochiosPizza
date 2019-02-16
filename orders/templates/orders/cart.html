@@ -1,0 +1,56 @@
+{% extends "orders/base.html" %}
+
+{% block scripts %}
+  {% load static from staticfiles %}
+<script type="text/javascript">
+  //var items = {{ items|safe }};
+</script>
+
+{% endblock %}
+
+{% block body %}
+
+<h1>Cart</h1>
+
+{% for i in items %}
+  <div class="container-fluid col-md-4 my-2 border border-success rounded justify-content-center">
+    <div class="row mx-1">
+      <b>Category:&nbsp</b> {{ i.item.category.name }}
+    </div>
+    <div class="row mx-1">
+      <b>Item:&nbsp</b> {{ i.item.name }}
+    </div>
+    <div class="row mx-1">
+      <b>Size:&nbsp</b> {{ i.item.size }}
+    </div>
+    <div class="row mx-1">
+      <b>Toppings:&nbsp</b>
+      {% for topping in i.toppings.all %}
+        {{ topping }}
+      {% endfor %}
+    </div>
+    <div class="row mx-1">
+      <b>Extras:&nbsp</b>
+      {% for addition in i.additions.all %}
+        {{ addition }}
+      {% endfor %}
+    </div>
+    <div class="row mx-1">
+      <b>Price:&nbsp</b> ${{ i.orderItemPrice }}
+    </div>
+  </div>
+{% endfor %}
+
+<div class="container-fluid my-2 col-md-2 border border-success rounded">
+  <div class="row justify-content-center">
+    <b>Total Cost: ${{ price }}</b>
+  </div>
+</div>
+
+<div class="container-fluid my-2">
+  <div class="row justify-content-center">
+    <button id="placeOrder" type="submit" class="btn btn-success">Place Order</button>
+  </div>
+</div>
+
+{% endblock %}

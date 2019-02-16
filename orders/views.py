@@ -6,18 +6,19 @@ from django.urls import reverse
 import json
 from django.core import serializers
 from orders import models as orders_models
+from decimal import Decimal
 
 
 # Create your views here.
 
 def index(request):
-  if not request.user.is_authenticated:
+    if not request.user.is_authenticated:
       return render(request, "orders/login.html", {"message": "Please log in below"})
-  context = {
+    context = {
       "user": request.user,
       "categories": orders_models.Category.objects.all()
-  }
-  return render(request, "orders/index.html", context)
+    }
+    return render(request, "orders/index.html", context)
 
 def login_view(request):
     if request.method == "POST":
@@ -33,8 +34,8 @@ def login_view(request):
         return render(request, "orders/login.html", {"message": "Please log in below"})
 
 def logout_view(request):
-  logout(request)
-  return render(request, "orders/login.html", {"message": "Logged out."})
+    logout(request)
+    return render(request, "orders/login.html", {"message": "Logged out."})
 
 def register_view(request):
     # if user is submitting form, save user and authenticate automatically
@@ -51,20 +52,17 @@ def register_view(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         #gather list of usernames and present form with that context
-        #temp = serialize("json", User.objects.all(), fields=("username"))
-        #print(temp)
         temp2 = User.objects.all().values_list("username")
-        #print(temp2)
         list = []
         for i in temp2:
             list.append(i[0])
-        #print(list)
         context = {}
         context["message"] = "Register Below"
         context["users"] = list
         return render(request, "orders/register.html", context)
 
 def category_view(request,category="subs"):
+    #send models to javascript
     if request.method == "GET":
         itemNames = orders_models.Item.objects.distinct().filter(category__slug=category).values('name')
         json_serializer = serializers.get_serializer("json")()
@@ -73,6 +71,8 @@ def category_view(request,category="subs"):
         additions = json_serializer.serialize(orders_models.Addition.objects.all())
         toppings = json_serializer.serialize(orders_models.Topping.objects.all())
         return render(request, "orders/category.html", {"message": "Category Page", "category": category, "items": items, "itemNames": itemNames, "sizes": sizes, "additions": additions, "toppings": toppings})
+
+    #take values from form and save order item
     else:
         item = orders_models.Item.objects.get(pk=request.POST["itemIdInput"])
         maxAdditions = orders_models.Addition.objects.filter(item__pk=item.pk).count()
@@ -96,7 +96,12 @@ def category_view(request,category="subs"):
                 topping = orders_models.Topping.objects.get(pk=request.POST[topnum])
                 orderItem.toppings.add(topping)
 
-        #orderItem.save()
-        #orderItem.save_m2m()
+        return HttpResponseRedirect(reverse("cart"))
 
-        return HttpResponseRedirect(reverse("index"))
+def cart_view(request):
+    user = request.user.pk
+    items = orders_models.OrderItem.objects.filter(user=user)
+    price = Decimal(0.00);
+    for item in items:
+        price += Decimal(item.orderItemPrice)
+    return render(request, "orders/cart.html",{"items": items, "price": price})

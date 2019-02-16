@@ -47,7 +47,8 @@
             <a href="{% url 'index' %}">Home</a>
           </div>
           <div class="col d-flex justify-content-end">
-            <a href="{% url 'logout' %}">Logout</a>
+            <a href="{% url 'cart' %}" class="px-1"><img src="{% static 'orders/cart.png' %}" width="25" height="25"></a>
+            <a href="{% url 'logout' %}" class="px-1">Logout</a>
           </div>
         </div>
       </div>
