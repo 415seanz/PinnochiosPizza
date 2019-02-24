@@ -1,0 +1,31 @@
+{% extends "orders/base.html" %}
+
+{% block scripts %}
+  {% load static from staticfiles %}
+  <script type="text/javascript">
+    //var items = {{ items|safe }};
+  </script>
+
+{% endblock %}
+
+{% block body %}
+
+<h1>My Orders</h1>
+
+
+
+{% for i in orders %}
+  <div class="container-fluid col-md-4 my-2 border border-success rounded justify-content-center">
+    <div class="row mx-1">
+      <b>Ordered:&nbsp</b> {{ i.timestamp }}
+    </div>
+    <div class="row mx-1">
+      <b>Price:&nbsp</b> ${{ i.totalPrice }}
+    </div>
+    <div class="row mx-1">
+      <b>Status:&nbsp</b> {{ i.status }}
+    </div>
+  </div>
+{% endfor %}
+
+{% endblock %}

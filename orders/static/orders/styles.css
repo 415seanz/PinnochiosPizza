@@ -194,3 +194,9 @@ div.internalmenunav {
     height: 100%;
     display: none;
 }
+
+@media only screen and (max-height: 600px) {
+    #header {
+        display: none;
+    }
+}

@@ -41,19 +41,22 @@ class Topping(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+class Order(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
+    timestamp = models.DateTimeField(blank=True, null=True)
+    status = models.CharField(max_length=16, blank=True, null=True)
+    totalPrice = models.DecimalField(max_digits=7, decimal_places=2, null=True)
+
+    def __str__(self):
+        return f"{self.user}: ({self.timestamp})"
+
 class OrderItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     additions = models.ManyToManyField(Addition, blank=True, related_name="orderitems")
     toppings = models.ManyToManyField(Topping, blank=True, related_name="orderitems")
     orderItemPrice = models.DecimalField(max_digits=4, decimal_places=2)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
+    order = models.ForeignKey(Order, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.item}: ({self.orderItemPrice})"
-
-class Order(models.Model):
-    products = models.ManyToManyField(OrderItem, blank=True, related_name="orders")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
-
-    def __str__(self):
-        return f"{self.category}: ({self.name})"

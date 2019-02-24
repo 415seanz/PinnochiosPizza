@@ -7,6 +7,8 @@ import json
 from django.core import serializers
 from orders import models as orders_models
 from decimal import Decimal
+from django.utils import timezone
+from django.utils.timezone import localtime
 
 
 # Create your views here.
@@ -99,9 +101,32 @@ def category_view(request,category="subs"):
         return HttpResponseRedirect(reverse("cart"))
 
 def cart_view(request):
+
+    #determin user and price
     user = request.user.pk
-    items = orders_models.OrderItem.objects.filter(user=user)
+    items = orders_models.OrderItem.objects.filter(user=user,order__isnull=True)
     price = Decimal(0.00);
     for item in items:
         price += Decimal(item.orderItemPrice)
-    return render(request, "orders/cart.html",{"items": items, "price": price})
+
+    # if it's a get request, show the cart with that user's open items
+    if request.method == "GET":
+        return render(request, "orders/cart.html",{"items": items, "price": price})
+
+    else:
+        #create order and redirect to order screen
+        order = orders_models.Order(user=request.user, timestamp=timezone.now(), status="Order Placed", totalPrice=price)
+        order.save()
+        for item in items:
+            item.order = order
+            item.save()
+        orderList = orders_models.Order.objects.filter(user=user).order_by('-timestamp')
+
+        return render(request, "orders/orders.html",{"orders": orderList})
+
+def orders_view(request):
+
+    #display orders
+    user = request.user.pk
+    orders = orders_models.Order.objects.filter(user=user).order_by('-timestamp')
+    return render(request, "orders/orders.html",{"orders": orders})

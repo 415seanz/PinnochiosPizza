@@ -2,14 +2,13 @@
 
 {% block scripts %}
   {% load static from staticfiles %}
-<script type="text/javascript">
-  var items = {{ items|safe }};
-  var sizes = {{ sizes|safe }}
-  var additions = {{ additions|safe }}
-  var toppings = {{ toppings|safe }}
-</script>
-<script src="{% static 'orders/category.js' %}"></script>
-
+  <script type="text/javascript">
+    var items = {{ items|safe }};
+    var sizes = {{ sizes|safe }}
+    var additions = {{ additions|safe }}
+    var toppings = {{ toppings|safe }}
+  </script>
+  <script src="{% static 'orders/category.js' %}"></script>
 {% endblock %}
 
 {% block body %}
