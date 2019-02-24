@@ -42,9 +42,14 @@
 {% endfor %}
 
 <div class="container-fluid my-2 col-md-4 border border-success rounded">
-  <div class="row justify-content-end mx-1">
-    <b>Total Cost: ${{ price }}</b>
-  </div>
+  {% if items|length > 0 %}
+    <div class="row justify-content-end mx-1">
+      <b>Total Cost: ${{ price }}</b>
+  {% else %}
+    <div class="row justify-content-center mx-1">
+      There's nothing in your cart yet!
+  {% endif %}
+    </div>
 </div>
 
 <div class="container-fluid my-2">
