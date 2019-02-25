@@ -69,10 +69,11 @@ def category_view(request,category="subs"):
         itemNames = orders_models.Item.objects.distinct().filter(category__slug=category).values('name')
         json_serializer = serializers.get_serializer("json")()
         items = json_serializer.serialize(orders_models.Item.objects.filter(category__slug=category))
+        categoryName = orders_models.Category.objects.distinct().filter(slug=category).values('name')[0]["name"]
         sizes = json_serializer.serialize(orders_models.Size.objects.all())
         additions = json_serializer.serialize(orders_models.Addition.objects.all())
         toppings = json_serializer.serialize(orders_models.Topping.objects.all())
-        return render(request, "orders/category.html", {"message": "Category Page", "category": category, "items": items, "itemNames": itemNames, "sizes": sizes, "additions": additions, "toppings": toppings})
+        return render(request, "orders/category.html", {"message": "Category Page", "category": category, "items": items, "itemNames": itemNames, "sizes": sizes, "additions": additions, "toppings": toppings, "categoryName": categoryName})
 
     #take values from form and save order item
     else:
@@ -115,14 +116,22 @@ def cart_view(request):
 
     else:
         #create order and redirect to order screen
-        order = orders_models.Order(user=request.user, timestamp=timezone.now(), status="Order Placed", totalPrice=price)
-        order.save()
-        for item in items:
-            item.order = order
-            item.save()
-        orderList = orders_models.Order.objects.filter(user=user).order_by('-timestamp')
-
-        return render(request, "orders/orders.html",{"orders": orderList})
+        action = request.POST["action"]
+        if action == "placeOrder":
+            order = orders_models.Order(user=request.user, timestamp=timezone.now(), status="Order Placed", totalPrice=price)
+            order.save()
+            for item in items:
+                item.order = order
+                item.save()
+            orderList = orders_models.Order.objects.filter(user=user).order_by('-timestamp')
+            return render(request, "orders/orders.html",{"orders": orderList})
+        else:
+            orders_models.OrderItem.objects.filter(pk=action).delete()
+            items = orders_models.OrderItem.objects.filter(user=user,order__isnull=True)
+            price = Decimal(0.00);
+            for item in items:
+                price += Decimal(item.orderItemPrice)
+            return render(request, "orders/cart.html",{"items": items, "price": price})
 
 def orders_view(request):
 

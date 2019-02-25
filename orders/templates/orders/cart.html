@@ -14,6 +14,13 @@
 
 {% for i in items %}
   <div class="container-fluid col-md-4 my-2 border border-success rounded justify-content-center">
+    <div class="row mx-1 justify-content-end">
+      <form class="form mx-1" action="{% url 'cart' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="{{ i.pk }}">
+        <button type="submit" class="btn"><img src="{% static 'orders/trash.png' %}" width="20" height="20"></button>
+      </form>
+    </div>
     <div class="row mx-1">
       <b>Category:&nbsp</b> {{ i.item.category.name }}
     </div>
@@ -58,6 +65,7 @@
     {% if items|length > 0 %}
       <form class="form mx-1" action="{% url 'cart' %}" method="post">
         {% csrf_token %}
+        <input type="hidden" name="action" value="placeOrder">
         <button id="placeOrder" type="submit" class="form-control btn btn-success">Place Order</button>
       </form>
     {% endif %}
