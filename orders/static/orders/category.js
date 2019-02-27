@@ -43,12 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
         var row = document.createElement('div');
         row.classList.add('row');
         row.classList.add('my-1');
-        row.classList.add('form-row');
+        //row.classList.add('form-row');
         row.classList.add('justify-content-center');
         toppingSection.appendChild(row);
 
         //create topping dropdown
         var select = document.createElement('select');
+
         select.classList.add('form-control');
         select.id = 'topping_' + k;
         select.name = 'topping_' + k;
@@ -182,6 +183,8 @@ function findAdds () {
       row.classList.add('d-flex');
       row.classList.add('my-1');
       row.classList.add('form-row');
+      row.classList.add('form-check');
+      row.classList.add('form-check-inline');
       document.getElementById('extrasSection').appendChild(row);
 
       //create checkbox
@@ -204,13 +207,16 @@ function findAdds () {
       var newLabel = document.createElement("label");
       newLabel.htmlFor = 'check_' + numExtras;
       newLabel.name = 'label_' + addName;
+      newLabel.id = 'label_' + numExtras;
       newLabel.classList.add('mx-1');
       newLabel.classList.add('form-check-label');
 
       //add to form
+
       document.getElementById('row_' + key).appendChild(checkbox);
       newLabel.appendChild(document.createTextNode(addName));
       document.getElementById('row_' + key).appendChild(newLabel);
+
       numExtras += 1;
     }
   }

@@ -1,0 +1,41 @@
+{% extends "orders/base.html" %}
+
+{% block scripts %}
+  {% load static from staticfiles %}
+  <script type="text/javascript">
+    var orders = {{ orders|safe }};
+    var users = {{ users|safe }}
+  </script>
+  <script src="{% static 'orders/staff.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+
+<!--insert select to choose orders by status-->
+<div class="container-fluid mt-2">
+  <div class="row justify-content-center my-1">
+    <h5 style="color: red;">I would normally restrict this page to staff members. I'm leaving it in for display purposes.</h5>
+  </div>
+  <div class="row justify-content-center my-1">
+    <h4>Choose Order Status</h4>
+  </div>
+  <div class="row justify-content-center my-1">
+    <select class="form-control col-9 col-md-3 justify-content-center" id="chooseStatus" name="chooseStatus">
+      {% for status in statuses %}
+        <option value="{{ status.status }}">{{ status.status }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="row justify-content-center my-1 py-1">
+    <button id="displayOrders" name="displayOrders" class="btn btn-success displayButton">Display Orders</button>
+  </div>
+</div>
+
+<form id="orderForm" class="form" action="/staff" method="POST">
+  {% csrf_token %}
+  <div id="orderSection" class="container-fluid justify-content-center"></div>
+    <input type="hidden" id="actionInput" name="actionInput">
+    <input type="hidden" id="ordernumInput" name="ordernumInput">
+</form>
+
+{% endblock %}

@@ -9,6 +9,7 @@ from orders import models as orders_models
 from decimal import Decimal
 from django.utils import timezone
 from django.utils.timezone import localtime
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 # Create your views here.
@@ -64,6 +65,8 @@ def register_view(request):
         return render(request, "orders/register.html", context)
 
 def category_view(request,category="subs"):
+    if not request.user.is_authenticated:
+      return render(request, "orders/login.html", {"message": "Please log in below"})
     #send models to javascript
     if request.method == "GET":
         itemNames = orders_models.Item.objects.distinct().filter(category__slug=category).values('name')
@@ -102,6 +105,8 @@ def category_view(request,category="subs"):
         return HttpResponseRedirect(reverse("cart"))
 
 def cart_view(request):
+    if not request.user.is_authenticated:
+      return render(request, "orders/login.html", {"message": "Please log in below"})
 
     #determin user and price
     user = request.user.pk
@@ -134,8 +139,72 @@ def cart_view(request):
             return render(request, "orders/cart.html",{"items": items, "price": price})
 
 def orders_view(request):
+    if not request.user.is_authenticated:
+      return render(request, "orders/login.html", {"message": "Please log in below"})
 
     #display orders
     user = request.user.pk
     orders = orders_models.Order.objects.filter(user=user).order_by('-timestamp')
     return render(request, "orders/orders.html",{"orders": orders})
+
+#@staff_member_required
+def staff_view(request):
+    if not request.user.is_authenticated:
+      return render(request, "orders/login.html", {"message": "Please log in below"})
+
+    json_serializer = serializers.get_serializer("json")()
+    users = json_serializer.serialize(User.objects.all().only('email'))
+
+    if request.method == "GET":
+        status_values = orders_models.Order.objects.distinct().values('status')
+        json_serializer = serializers.get_serializer("json")()
+        orders = json_serializer.serialize(orders_models.Order.objects.all().order_by('-timestamp'))
+        return render(request, "orders/staff.html",{"orders": orders, "statuses": status_values, "users": users})
+
+    else:
+        action = request.POST["actionInput"]
+        ordernum = request.POST["ordernumInput"]
+
+        #if user clicks delete, delete appropriate order
+        if action == "delete":
+            orders_models.Order.objects.filter(pk=ordernum).delete()
+            status_values = orders_models.Order.objects.distinct().values('status')
+            json_serializer = serializers.get_serializer("json")()
+            orders = json_serializer.serialize(orders_models.Order.objects.all().order_by('-timestamp'))
+            return render(request, "orders/staff.html",{"orders": orders, "statuses": status_values, "users": users})
+
+        #if user clicks mark complete, complete appropriate order
+        elif action == "complete":
+            order = orders_models.Order.objects.get(pk=ordernum)
+            order.status = "Complete"
+            order.save()
+            status_values = orders_models.Order.objects.distinct().values('status')
+            json_serializer = serializers.get_serializer("json")()
+            orders = json_serializer.serialize(orders_models.Order.objects.all().order_by('-timestamp'))
+            return render(request, "orders/staff.html",{"orders": orders, "statuses": status_values, "users": users})
+
+        #if user clicks view, open order and show details
+        elif action == "view":
+            url = "/staff/" + ordernum
+            return HttpResponseRedirect(url)
+
+#@staff_member_required
+def vieworder_view(request, ordernum=1):
+
+    if not request.user.is_authenticated:
+      return render(request, "orders/login.html", {"message": "Please log in below"})
+
+    if request.method == "POST" and request.POST["action"] == "deleteOrder":
+          orders_models.Order.objects.filter(pk=ordernum).delete()
+
+    elif request.method == "POST" and request.POST["action"] == "completeOrder":
+        order = orders_models.Order.objects.get(pk=ordernum)
+        order.status = "Complete"
+        order.save()
+
+    items = orders_models.OrderItem.objects.filter(order=ordernum)
+    orderStatus = orders_models.Order.objects.get(pk=ordernum).status
+    price = Decimal(0.00);
+    for item in items:
+        price += Decimal(item.orderItemPrice)
+    return render(request, "orders/staff/vieworder.html", {"ordernum": ordernum, "items": items, "price": price, "orderStatus": orderStatus})

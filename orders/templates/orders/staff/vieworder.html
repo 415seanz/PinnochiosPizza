@@ -1,0 +1,75 @@
+{% extends "orders/base.html" %}
+
+{% block scripts %}
+  {% load static from staticfiles %}
+  <script type="text/javascript">
+    //var items = {{ items|safe }};
+  </script>
+
+{% endblock %}
+
+{% block body %}
+
+<h1>Order {{ ordernum }} - {{ orderStatus }}</h1>
+
+{% for i in items %}
+  <div class="container-fluid col-md-4 my-2 border border-success rounded justify-content-center">
+    <div class="row mx-1">
+      <b>Category:&nbsp</b> {{ i.item.category.name }}
+    </div>
+    <div class="row mx-1">
+      <b>Item:&nbsp</b> {{ i.item.name }}
+    </div>
+    <div class="row mx-1">
+      <b>Size:&nbsp</b> {{ i.item.size }}
+    </div>
+    <div class="row mx-1">
+      <b>Toppings:&nbsp</b>
+      {% for topping in i.toppings.all %}
+        {{ topping }}
+      {% endfor %}
+    </div>
+    <div class="row mx-1">
+      <b>Extras:&nbsp</b>
+      {% for addition in i.additions.all %}
+        {{ addition }}
+      {% endfor %}
+    </div>
+    <div class="row mx-1 justify-content-end">
+      <b>Price:&nbsp</b> ${{ i.orderItemPrice }}
+    </div>
+  </div>
+{% endfor %}
+
+<div class="container-fluid my-2 col-md-4 border border-success rounded">
+  {% if items|length > 0 %}
+    <div class="row justify-content-end mx-1">
+      <b>Total Cost: ${{ price }}</b>
+  {% else %}
+    <div class="row justify-content-center mx-1">
+      This order does not exist.
+  {% endif %}
+    </div>
+</div>
+
+<div class="container-fluid my-2">
+  <div class="row justify-content-center">
+    <a href="{% url 'staff' %}" class="mx-1"><button id="back" class="form-control btn btn-secondary">Back To Orders</button></a>
+    {% if items|length > 0 %}
+      <form class="form mx-1" action="{% url 'vieworder' ordernum %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="deleteOrder">
+        <button id="deleteButton" type="submit" class="form-control btn btn-danger">Delete Order</button>
+      </form>
+      {% if orderStatus != "Complete" %}
+      <form class="form mx-1" action="{% url 'vieworder' ordernum %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="completeOrder">
+        <button id="completeButton" type="submit" class="form-control btn btn-success">Mark Complete</button>
+      </form>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

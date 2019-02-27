@@ -43,15 +43,20 @@
       </div>
 
       <div class="container-fluid">
-        <div class="row mx-0">
+        <div class="row mx-0 my-1">
           <div class="col d-flex justify-content-start">
-            <a href="{% url 'index' %}">Home</a>
+            <a href="{% url 'index' %}" class="px-1">Home</a>
           </div>
           <div class="col d-flex justify-content-end">
             <a href="{% url 'cart' %}" class="px-1"><img src="{% static 'orders/cart.png' %}" width="25" height="25"></a>
             <a href="{% url 'orders' %}" class="px-1">Orders</a>
             <a href="{% url 'logout' %}" class="px-1">Logout</a>
           </div>
+        </div>
+        <div class="row mx-0 my-1">
+          <!--{% if request.user.is_staff %}-->
+            <a href="{% url 'staff' %}" class="px-1">Staff Portal</a>
+          <!--{% endif %}-->
         </div>
       </div>
 
