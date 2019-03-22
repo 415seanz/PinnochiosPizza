@@ -6,6 +6,6 @@ Download the code.
 Install the requirements
 `$ pip install -r requirements`
 
-Run `python manage.py runserver` to run the server.
+Run `python3 manage.py runserver` to run the server.
 
 Visit the link provided.
